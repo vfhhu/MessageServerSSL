@@ -3,11 +3,20 @@ SocketPort = 2022
 WebSocketPort = 2080
 send_second = 5
 pass = "3x"
+limit = 0
 [wss]
-  crt = "/etc/pki/tls/certs/ws.fruitsadventures.com/nginx.crt"
+  crt = "/etc/pki/tls/certs/ws.fruitsadventures.com/certificate.crt"
+  ca_bundle = "/etc/pki/tls/certs/ws.fruitsadventures.com/ca_bundle.crt"
   key = "/etc/pki/tls/certs/ws.fruitsadventures.com/private.key"
+  save_combine_path = "/usr/local/java/MessageServer/"
 #   port = 2082
-  
+[sys]
+  group = ["newvfhhu@yahoo.com.tw"]
+  no = ["leo","lion"]
+[author]
+  email = "newvfhhu@yahoo.com.tw"
+  name = "leo"
+
 [test]
   test1 = "123 A Street"
   test2 = "AnyVille"

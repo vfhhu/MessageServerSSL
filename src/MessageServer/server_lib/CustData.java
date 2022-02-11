@@ -1,15 +1,11 @@
-package MessageServer.websocket;
+package MessageServer.server_lib;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 
-import MessageServer.server_socket.ServerSocketN;
 import org.java_websocket.WebSocket;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,6 +15,7 @@ public class CustData {
 	private boolean isSendInfo=false;
 	private WebSocket conn;
 	private SocketChannel client;
+	private String group="";
 	private List<String> groupA;
 	private List<String> roomA;
 	private String info="";
@@ -47,8 +44,9 @@ public class CustData {
 	
 	
 	public boolean send(String s){
+		if(no.trim().length()==0)return false;
 //		arr.offer(s);
-//		System.out.println("************* send:"+isRun+","+conn.isOpen());
+//		Log.d("************* send:"+isRun+","+conn.isOpen());
 		boolean issend=false;
 		if(conn!=null && isRun && conn.isOpen() && !conn.isClosed()){
 			conn.send(s);
@@ -78,8 +76,16 @@ public class CustData {
 	public void setConn(WebSocket conn) {
 		this.conn = conn;
 	}
-	public List<String> getGroupA() {
-		return groupA;
+//	public List<String> getGroupA() {
+//		return groupA;
+//	}
+	public String getGroup() {
+		return group;
+	}
+	public void setGroup(String _gp) {
+		group=_gp;
+		info="";
+		no="";
 	}
 	public List<String> getRoomA() {
 		return roomA;

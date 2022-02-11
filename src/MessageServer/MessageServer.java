@@ -1,8 +1,10 @@
 package MessageServer;
 
-import MessageServer.server_socket.ServerSocketN;
-import MessageServer.websocket.wsServer;
+import MessageServer.server_lib.ServerSocketN;
+import MessageServer.server_lib.wsServer;
 import com.moandjiezana.toml.Toml;
+import com.threex.lib.Log;
+import com.threex.lib.ssl.WsSSL;
 import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
 
 import javax.net.ssl.SSLContext;
@@ -12,9 +14,7 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 
@@ -64,7 +64,7 @@ public class MessageServer {
         String configFile = SERVER_PATH + "/conf/" + SYSTEM_NAME + ".toml";
         toml = new Toml().read(new File(configFile));
         if(toml==null){
-            GlobalData.println("conf.toml is error");
+            Log.println("conf.toml is error");
             return;
         }
         conf = new MyConf(toml);
@@ -91,7 +91,7 @@ public class MessageServer {
         String op_time = String.format("%1$tH:%1$tM:%1$tS", ca);
         logBuffer.append("op_time:" + op_time + newline);
 
-        System.out.println(logBuffer);
+        Log.d(logBuffer.toString());
 
         Logger logger = Logger.getLogger("SystemInfo");
         logger.info(logBuffer.toString());
@@ -100,9 +100,7 @@ public class MessageServer {
         }
     }
     private void init() {
-        System.out.println();
-        System.out.println("Initial Server....");
-        System.out.println();
+        Log.d("Initial Server....");
 
 
 
@@ -111,8 +109,8 @@ public class MessageServer {
 
         InetSocketAddress addrW = new InetSocketAddress(conf.getWebSocketPort());
         wsServer ws=wsServer.getInstance(addrW);
-        if(!conf.getPath_crt().equals("") && !conf.getPath_key().equals("")){
-            SSLContext context = GlobalData.getContext(conf.getPath_crt(),conf.getPath_key());
+        if(conf.getPath_crt()!=null && conf.getPath_key()!=null && !conf.getPath_crt().equals("") && !conf.getPath_key().equals("")){
+            SSLContext context = WsSSL.getContext(conf.getPath_key(),conf.getPath_crt(),conf.getPath_ca_bundle(),conf.get_save_combine_path());
             if(context!=null){
                 ws.setWebSocketFactory(new DefaultSSLWebSocketServerFactory(context));
             }
@@ -142,7 +140,7 @@ public class MessageServer {
         }).start();
 
 
-        System.out.println("ClientListen Initial OK!");
+        Log.d("ClientListen Initial OK!");
 
     }
 }

@@ -17,11 +17,11 @@ public class Hmac {
             String hexStringOfTheOriginMessage = bytesToHex(macData); //  使用Apache Commons Codec的Hex把雜湊計算的結果轉為Hex字串
             return hexStringOfTheOriginMessage;
 
-//            System.out.println(hexStringOfTheOriginMessage); // 388b02bb9be6c19490d4014aaaccb62a3969f44f3ecef3b2218e7ee1d457188d
+//            Log.d(hexStringOfTheOriginMessage); // 388b02bb9be6c19490d4014aaaccb62a3969f44f3ecef3b2218e7ee1d457188d
 //
-//            System.out.println(hmacSHA256.getAlgorithm()); // HmacSHA256
-//            System.out.println(hmacSHA256.getMacLength()); // 32
-//            System.out.println(hmacSHA256.getProvider().getName()); // SunJCE (JCE提供者)
+//            Log.d(hmacSHA256.getAlgorithm()); // HmacSHA256
+//            Log.d(hmacSHA256.getMacLength()); // 32
+//            Log.d(hmacSHA256.getProvider().getName()); // SunJCE (JCE提供者)
         } catch (Exception e) {
             // 例外處理
         }

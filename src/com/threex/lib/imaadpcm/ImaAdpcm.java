@@ -129,9 +129,9 @@ int tmp_cnt=0;
 
         byte codeSample1=codes[ inputIdx++ ];
         byte codeSample2=codes[ inputIdx++ ];
-//        System.out.println("=====decode");        
-//        System.out.println("====="+String.format("%02X", codeSample1)+","+String.format("%02X", codeSample2));
-        //System.out.println("====="+byteToInt2(new byte[]{codeSample1,codeSample2}));
+//        Log.d("=====decode");
+//        Log.d("====="+String.format("%02X", codeSample1)+","+String.format("%02X", codeSample2));
+        //Log.d("====="+byteToInt2(new byte[]{codeSample1,codeSample2}));
         byte codeIndex=codes[ inputIdx++ ];
         byte codeReserved=codes[ inputIdx++ ];
 
@@ -162,7 +162,7 @@ int tmp_cnt=0;
             if (cur_sample>32767) cur_sample=32767;
             else if (cur_sample<-32768) cur_sample= -32768;
             byte byteSample[]=ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putShort((short) cur_sample).array();            
-//            if(cur_sample>32767 || cur_sample<-32768)System.out.println("block"+tmp_cnt+" diff:"+diff+",cur_sample:"+cur_sample);   
+//            if(cur_sample>32767 || cur_sample<-32768)Log.d("block"+tmp_cnt+" diff:"+diff+",cur_sample:"+cur_sample);
             
             output[outputIdx++]=byteSample[0];
             output[outputIdx++]=byteSample[1];
@@ -183,7 +183,7 @@ int tmp_cnt=0;
             if (cur_sample>32767) cur_sample=32767;
             else if (cur_sample<-32768) cur_sample= -32768;
             byteSample=ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putShort((short) cur_sample).array();
-//            if(cur_sample>32767 || cur_sample<-32768)System.out.println("block"+tmp_cnt+" diff:"+diff+",cur_sample:"+cur_sample);
+//            if(cur_sample>32767 || cur_sample<-32768)Log.d("block"+tmp_cnt+" diff:"+diff+",cur_sample:"+cur_sample);
             
             output[outputIdx++]=byteSample[0];
             output[outputIdx++]=byteSample[1];
@@ -336,13 +336,13 @@ int tmp_cnt=0;
 //    public static void main( String[] args ) {
 //        try {
 //            if( args.length != 2 ) {
-//                System.out.println( "IMA ADPCM Converter " + VERSION );
-//                System.out.println( "Usage: java " + ImaAdpcm.class.getName() + " input.wav output.ima" );
+//                Log.d( "IMA ADPCM Converter " + VERSION );
+//                Log.d( "Usage: java " + ImaAdpcm.class.getName() + " input.wav output.ima" );
 //                System.exit( 0 );
 //            }
 //            String wavFileName = args[ 0 ];
 //            String imaFileName = args[ 1 ];
-//            System.out.println( "Converting " + wavFileName + " to " + imaFileName );
+//            Log.d( "Converting " + wavFileName + " to " + imaFileName );
 //            InputStream input = new java.io.FileInputStream( wavFileName );
 //            OutputStream output = new java.io.FileOutputStream( imaFileName );
 //            try {

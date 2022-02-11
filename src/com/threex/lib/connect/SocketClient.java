@@ -1,6 +1,8 @@
 package com.threex.lib.connect;
 
 
+import com.threex.lib.Log;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -52,8 +54,8 @@ public class SocketClient implements Runnable {
             new Thread(this, "SocketClient.init").start();
 
         } catch (Exception e) {
-            System.out.println("Socket連線有問題 !");
-            System.out.println("IOException :" + e.toString());
+            Log.d("Socket連線有問題 !");
+            Log.d("IOException :" + e.toString());
             e.printStackTrace();
             close();
         }

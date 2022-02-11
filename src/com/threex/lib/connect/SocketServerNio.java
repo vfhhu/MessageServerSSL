@@ -1,6 +1,8 @@
 package com.threex.lib.connect;
 
 
+import com.threex.lib.Log;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -86,7 +88,7 @@ public class SocketServerNio {
 
 
                 isClose = false;
-                System.out.println("start: ");
+                Log.d("start: ");
                 if(listener!=null)listener.onStart();
                 while (!isClose) {
                     try {
@@ -109,7 +111,7 @@ public class SocketServerNio {
                                     SocketServerNio.this.read(key);
                                 }
                             }catch(IOException ex){
-                            	System.out.println("socket close");
+                            	Log.d("socket close");
                             }
                             
                         }
@@ -145,8 +147,8 @@ public class SocketServerNio {
         channel.configureBlocking(false);
         Socket socket = channel.socket();
         SocketAddress remoteAddr = socket.getRemoteSocketAddress();
-        System.out.println("Connected to: " + remoteAddr);
-        //System.out.println("Connected to: " + remoteAddr);
+        Log.d("Connected to: " + remoteAddr);
+        //Log.d("Connected to: " + remoteAddr);
         // register channel with selector for further IO
         dataMapper.put(channel, new ArrayList());
         channel.register(this.selector, SelectionKey.OP_READ);
@@ -162,8 +164,8 @@ public class SocketServerNio {
             this.dataMapper.remove(channel);
             Socket socket = channel.socket();
             SocketAddress remoteAddr = socket.getRemoteSocketAddress();
-            System.out.println("Connection closed by client: " + remoteAddr);
-//            System.out.println("Connection closed by client: " + remoteAddr);
+            Log.d("Connection closed by client: " + remoteAddr);
+//            Log.d("Connection closed by client: " + remoteAddr);
             channel.close();
             key.cancel();
             if(listener!=null)listener.onClosed(channel);
@@ -182,7 +184,7 @@ public class SocketServerNio {
             this.dataMapper.remove(channel);
             Socket socket = channel.socket();
             SocketAddress remoteAddr = socket.getRemoteSocketAddress();
-            System.out.println("Connection closed by client: " + remoteAddr);
+            Log.d("Connection closed by client: " + remoteAddr);
             channel.close();
             key.cancel();
             if(listener!=null)listener.onClosed(channel);
@@ -203,7 +205,7 @@ public class SocketServerNio {
             while(line_rn>0){
             	count++;
             	if(count>20)break;
-            	System.out.println("arr length:"+arr.size());
+            	Log.d("arr length:"+arr.size());
             	byte[] retData=sublistNL("\r\n",arr);
         		if(listener!=null)listener.onData(new String(retData),channel,retData);   
         		line_rn=indexOf(arr,"\r\n".getBytes());        
@@ -212,7 +214,7 @@ public class SocketServerNio {
             while(line_n>0){
             	count++;
             	if(count>20)break;
-            	System.out.println("arr length:"+arr.size());
+            	Log.d("arr length:"+arr.size());
             	byte[] retData=sublistNL("\n",arr);
         		if(listener!=null)listener.onData(new String(retData),channel,retData);   
         		line_n=indexOf(arr,"\n".getBytes());    

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.moandjiezana.toml.Toml;
+import com.threex.lib.Log;
 
 public class MyConf {
 	private int					SocketPort				= 0;
@@ -17,7 +18,15 @@ public class MyConf {
 	private int					send_second				= 0;
 	private String				pass				= "";
 	private String	path_crt="";
+	private String	path_ca_bundle="";
+	private String	save_combine_path="";
 	private String	path_key="";
+
+	private List<String>	sys_no=null;
+	private List<String>	sys_group=null;
+	private int	limit=0;
+
+
 //	private int		wss_port= 0;
 //	private List<String> admin =new ArrayList<String>();
 	Toml toml;
@@ -40,7 +49,7 @@ public class MyConf {
 	protected void initConfigure() {
 
 		if (toml == null) {
-			System.out.println("讀取外部設定檔失敗");
+			Log.println("讀取外部設定檔失敗");
 			System.exit(1);
 		}
 		
@@ -48,18 +57,18 @@ public class MyConf {
 		try {
 			SocketPort = toml.getLong("SocketPort").intValue();
 			if (checkListen(SocketPort)) {
-				System.out.println("PORT " + SocketPort + "使用中，程式已經中止");
+				Log.d("PORT " + SocketPort + "使用中，程式已經中止");
 				System.exit(1);
 			}
 		}catch (NumberFormatException e) {
-			System.out.println("SocketPort 設定錯誤");
+			Log.d("SocketPort 設定錯誤");
 			System.exit(1);
 		}
 		try {
 			pass = toml.getString("pass");
-			//System.out.println("pass "+pass);
+			//Log.d("pass "+pass);
 		}catch (NumberFormatException e) {
-			System.out.println("pass 設定錯誤");
+			Log.d("pass 設定錯誤");
 			System.exit(1);
 		}
 		
@@ -67,29 +76,29 @@ public class MyConf {
 		try {
 			WebSocketPort = toml.getLong("WebSocketPort").intValue();
 			if (checkListen(WebSocketPort)) {
-				System.out.println("PORT " + WebSocketPort + "使用中，程式已經中止");
+				Log.d("PORT " + WebSocketPort + "使用中，程式已經中止");
 				System.exit(1);
 			}
 		}catch (NumberFormatException e) {
-			System.out.println("WebSocketPort 設定錯誤");
+			Log.d("WebSocketPort 設定錯誤");
 			System.exit(1);
 		}
 		try {
 			DdeviceMsgUrl = toml.getString("DdeviceMsgUrl");
 		}catch (Exception e) {
-			System.out.println("DdeviceMsgUrl 錯誤");
+			Log.d("DdeviceMsgUrl 錯誤");
 			System.exit(1);
 		}
 		try {
 			gc_second = toml.getLong("gc_second").intValue();
 		}catch (Exception e) {
-			System.out.println("gc_second 設定錯誤");
+			Log.d("gc_second 設定錯誤");
 			System.exit(1);
 		}
 		try {
 			send_second = gc_second = toml.getLong("send_second").intValue();
 		}catch (Exception e) {
-			System.out.println("send_second 設定錯誤");
+			Log.d("send_second 設定錯誤");
 			System.exit(1);
 		}
 
@@ -97,32 +106,77 @@ public class MyConf {
 		try {
 			path_crt = toml.getString("wss.crt");
 		}catch (Exception e) {
-			System.out.println("wss.crt 錯誤");
+			Log.d("wss.crt 錯誤");
+			path_crt="";
 			//System.exit(1);
 		}
+		try {
+			path_ca_bundle = toml.getString("wss.ca_bundle");
+		}catch (Exception e) {
+			Log.d("wss.ca_bundle 錯誤");
+			path_ca_bundle="";
+			//System.exit(1);
+		}
+		try {
+			save_combine_path = toml.getString("wss.save_combine_path");
+		}catch (Exception e) {
+			Log.d("wss.save_combine_path 錯誤");
+			save_combine_path="";
+			//System.exit(1);
+		}
+
 
 		try {
 			path_key = toml.getString("wss.key");
 		}catch (Exception e) {
-			System.out.println("wss.key 錯誤");
+			Log.d("wss.key 錯誤");
+			path_key="";
 			//System.exit(1);
 		}
+
+
+		try {
+			sys_no = toml.getList("sys.no");
+		}catch (Exception e) {
+			Log.d("sys.no 錯誤");
+			sys_no=new ArrayList<>();
+			//System.exit(1);
+		}
+		try {
+			sys_group = toml.getList("sys.group");
+		}catch (Exception e) {
+			Log.d("sys.group 錯誤");
+			sys_group=new ArrayList<>();
+			//System.exit(1);
+		}
+
+
+		try {
+			limit = toml.getLong("limit").intValue();
+
+		}catch (NumberFormatException e) {
+			Log.d("limit 設定錯誤");
+			limit=0;
+		}
+
+
+
 //		try {
 //			wss_port = toml.getLong("wss.port").intValue();
 //			if (checkListen(wss_port)) {
-//				System.out.println("wss.port " + wss_port + "使用中");
+//				Log.d("wss.port " + wss_port + "使用中");
 //			}
 //		}catch (NumberFormatException e) {
-//			System.out.println("wss_port 設定錯誤");
+//			Log.d("wss_port 設定錯誤");
 //		}
 
 
 
 //		try {
 //			admin = toml.getList("admin");
-//			System.out.println("admin:"+admin.get(0));
+//			Log.d("admin:"+admin.get(0));
 //		}catch (Exception e) {
-//			System.out.println("admin 設定錯誤");
+//			Log.d("admin 設定錯誤");
 //			System.exit(1);
 //		}
 	}
@@ -159,7 +213,28 @@ public class MyConf {
 		return path_key;
 	}
 
-//	public int getWss_port() {
+	public String getPath_ca_bundle() {
+		return path_ca_bundle;
+	}
+	public String get_save_combine_path() {
+		return save_combine_path;
+	}
+
+	public List<String> getSysNoL() {
+		if(sys_no==null)return new ArrayList<>();
+		return sys_no;
+	}
+
+	public List<String> getSysGroupL() {
+		if(sys_group==null)return new ArrayList<>();
+		return sys_group;
+	}
+
+	public int getLimit() {
+		return limit;
+	}
+
+	//	public int getWss_port() {
 //		return wss_port;
 //	}
 	//	public List<String> getAdminList() {

@@ -1,22 +1,14 @@
-package MessageServer.server_socket;
+package MessageServer.server_lib;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.channels.SocketChannel;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.java_websocket.WebSocket;
+import com.threex.lib.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,8 +18,6 @@ import com.threex.lib.connect.OnSocketServerListener;
 import com.threex.lib.connect.SocketServerNio;
 
 import MessageServer.GlobalData;
-import MessageServer.websocket.CustData;
-import MessageServer.websocket.wsServer;
 
 public class ServerSocketN extends SocketServerNio{
 	private static ServerSocketN server;
@@ -118,13 +108,13 @@ public class ServerSocketN extends SocketServerNio{
 		@Override
 		public void onSend(String src, SocketChannel client) {
 			// TODO Auto-generated method stub
-			System.out.println("onSend: " + src);
+			Log.d("onSend: " + src);
 		}
 
 		@Override
 		public void onSend(byte[] src, SocketChannel client) {
 			// TODO Auto-generated method stub
-			System.out.println("onSendbyte : " +  byteToHexString(src));
+			Log.d("onSendbyte : " +  byteToHexString(src));
 		}
 
 		@Override
@@ -133,10 +123,10 @@ public class ServerSocketN extends SocketServerNio{
 			// TODO Auto-generated method stub
 			String SrcArr[]=new String[]{src};
 			if(src.indexOf("\r\n")>0){
-//				System.out.println("onData new line: rn");
+//				Log.d("onData new line: rn");
 				SrcArr=src.split("\\r\\n");
 			}	else if(src.indexOf("\n")>0){
-//				System.out.println("onData new line: n");
+//				Log.d("onData new line: n");
 				SrcArr=src.split("\\n");			
 			}
 			for(String s:SrcArr){
@@ -149,7 +139,7 @@ public class ServerSocketN extends SocketServerNio{
 			// TODO Auto-generated method stub
 			if(client==null)return;
 			try{
-				System.out.println( client.socket().getRemoteSocketAddress() + " entered the room!" );
+				Log.d( client.socket().getRemoteSocketAddress() + " entered the room!" );
 				int key=client.hashCode()+client.socket().getRemoteSocketAddress().hashCode();
 				GlobalData.getCustDataMap().put("client"+key, new CustData("client"+key,client));
 			}catch(Exception e){
@@ -162,7 +152,7 @@ public class ServerSocketN extends SocketServerNio{
 			// TODO Auto-generated method stub
 			if(client==null)return;
 			try{
-				System.out.println( client.socket().getRemoteSocketAddress() + " leave the room!" );
+				Log.d( client.socket().getRemoteSocketAddress() + " leave the room!" );
 				int key=client.hashCode()+client.socket().getRemoteSocketAddress().hashCode();
 				GlobalData.CustExit("client"+key);
 //				GlobalData.getCustDataMap().remove("client"+key);
@@ -181,7 +171,7 @@ public class ServerSocketN extends SocketServerNio{
 	
 	public void onData(String src, SocketChannel client){
 		if(client==null)return;
-//		System.out.println("onData: " + src.trim());
+//		Log.d("onData: " + src.trim());
 		try{
 			int key_cust=client.hashCode()+client.socket().getRemoteSocketAddress().hashCode();
 			CustData custData=GlobalData.getCustDataMap().get("client"+key_cust);

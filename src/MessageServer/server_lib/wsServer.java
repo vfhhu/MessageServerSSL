@@ -1,21 +1,16 @@
-package MessageServer.websocket;
+package MessageServer.server_lib;
 
 
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.channels.SocketChannel;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
+import com.threex.lib.Log;
 import org.java_websocket.WebSocket;
-import org.java_websocket.drafts.Draft;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
 
 import MessageServer.GlobalData;
-import MessageServer.server_socket.ServerSocketN;
 //import org.java_websocket.drafts.Draft_6455;
 
 
@@ -52,8 +47,8 @@ public class wsServer extends WebSocketServer {
 		//this.sendToAll( "new connection: " + handshake.getResourceDescriptor() );
 		//memberID++;	
 		if(conn==null)return;
-		try{					
-			GlobalData.println( conn.getRemoteSocketAddress().getAddress().getHostAddress() + " entered the room!" );
+		try{
+			Log.println( conn.getRemoteSocketAddress().getAddress().getHostAddress() + " entered the room!" );
 			int key=conn.hashCode()+conn.getRemoteSocketAddress().hashCode();
 			GlobalData.getCustDataMap().put("conn"+key, new CustData("conn"+key,conn));
 		}catch(Exception e){
@@ -67,7 +62,7 @@ public class wsServer extends WebSocketServer {
 		
 		if( conn != null ) {
 			try{
-				GlobalData.println( conn + " has left the room!" );
+				Log.println( conn + " has left the room!" );
 				int key=conn.hashCode()+conn.getRemoteSocketAddress().hashCode();
 				//CustData cd=GlobalData.getCustDataMap().remove("conn"+key);
 				CustData cd=GlobalData.CustExit("conn"+key);
@@ -95,14 +90,14 @@ public class wsServer extends WebSocketServer {
 
 	@Override
 	public void onStart() {
-		GlobalData.println( "onStart" );
+		Log.println( "onStart" );
 	}
 
 	@Override
 	public void onMessage( WebSocket conn, String message ) {
 		//this.sendToAll( message );
 		if( conn == null ) return;
-		GlobalData.println( conn + " onMessage: " + message );
+		Log.println( conn + " onMessage: " + message );
 		try{
 			int key_cust=conn.hashCode()+conn.getRemoteSocketAddress().hashCode();
 			CustData custData=GlobalData.getCustDataMap().get("conn"+key_cust);

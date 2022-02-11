@@ -1,5 +1,7 @@
 package com.threex.lib.connect;
 
+import com.threex.lib.Log;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -81,9 +83,9 @@ public class Http {
         wr.close();
 
         int responseCode = con.getResponseCode();
-        System.out.println("\nSending 'POST' request to URL : " + url);
-        System.out.println("Post parameters : " + urlParameters);
-        System.out.println("Response Code : " + responseCode);
+        Log.d("\nSending 'POST' request to URL : " + url);
+        Log.d("Post parameters : " + urlParameters);
+        Log.d("Response Code : " + responseCode);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -96,7 +98,7 @@ public class Http {
         in.close();
 
         //print result
-        System.out.println(response.toString());
+        Log.d(response.toString());
         return response.toString();
     }
 }
