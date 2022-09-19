@@ -20,18 +20,15 @@ import java.util.logging.Logger;
 
 public class MessageServer {
     private static final String			Server_Version	= "MessageServer Version 2021-09-01";
-    // �t�ΦW��
     public static final String			SYSTEM_NAME		= MessageServer.class.getSimpleName();
-    // �@�~�t��
     private static String				OS				= null;
-    // Windows���w
+    // Windows path
     private static final String			WIN_PATH		= "./";
-    // Linux���|
+    // Linux path
     private static final String			LINUX_PATH		= "/usr/local/java/MessageServer/";
 
-    // �t�θ��|
+
     private static File					SERVER_PATH		= null;
-    // �t�Υ���IP
     private static String				SERVER_IP		= null;
     private MyConf					conf			= null;
     private Toml toml = null;
