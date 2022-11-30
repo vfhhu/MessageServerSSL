@@ -184,7 +184,7 @@ public class ServerSocketN extends SocketServerNio{
 				//e.printStackTrace();
 			}
 			if (json == null) return;
-			GlobalData.onData(custData ,json);
+			GlobalData.onData(custData ,json,false);
 		}catch (Exception e){e.printStackTrace();}
 
 

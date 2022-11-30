@@ -35,7 +35,8 @@ public class GlobalData {
 	private static ConcurrentHashMap <String, List<String>> blackList=new ConcurrentHashMap<>();
 //	public static List blackList = Collections.synchronizedList(new ArrayList());
 
-	public static void onData(CustData custData, JSONObject json){
+	public static void onData(CustData custData, JSONObject json,boolean sendGroupFromServer){
+
 		String cmd="";
 		String value="";
 		try{
@@ -44,6 +45,7 @@ public class GlobalData {
 			e.printStackTrace();
 			cmd="";
 		}
+		if(!sendGroupFromServer && cmd.equals("sendGroupFromServer"))return;
 		try{
 			value=json.optString("value");//get("type");
 		}catch(Exception e){
@@ -556,7 +558,7 @@ public class GlobalData {
 			jobj.put("cmd","sendGroupFromServer");
 			jobj.put("group",group);
 			jobj.put("value",custData.getNo());
-			GlobalData.onData(custData ,jobj);
+			GlobalData.onData(custData ,jobj,true);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
