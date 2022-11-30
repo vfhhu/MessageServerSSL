@@ -1,6 +1,7 @@
 gc_second = 30
 SocketPort = 2022
 WebSocketPort = 2080
+StunPort=3478
 send_second = 5
 pass = "3x"
 limit = 0

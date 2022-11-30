@@ -1,6 +1,7 @@
 package MessageServer;
 
 import MessageServer.server_lib.ServerSocketN;
+import MessageServer.server_lib.StunServer;
 import MessageServer.server_lib.wsServer;
 import com.moandjiezana.toml.Toml;
 import com.threex.lib.Log;
@@ -11,6 +12,7 @@ import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -105,12 +107,26 @@ public class MessageServer {
 
 
         InetSocketAddress addrW = new InetSocketAddress(conf.getWebSocketPort());
-        wsServer ws=wsServer.getInstance(addrW);
+        final wsServer ws=wsServer.getInstance(addrW);
         if(conf.getPath_crt()!=null && conf.getPath_key()!=null && !conf.getPath_crt().equals("") && !conf.getPath_key().equals("")){
-            SSLContext context = WsSSL.getContext(conf.getPath_key(),conf.getPath_crt(),conf.getPath_ca_bundle(),conf.get_save_combine_path());
-            if(context!=null){
-                ws.setWebSocketFactory(new DefaultSSLWebSocketServerFactory(context));
-            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while(true){
+                        try {
+                            Thread.sleep(86400000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        setSSL(ws);
+                    }
+                }
+            }).start();
+            setSSL(ws);
+//            SSLContext context = WsSSL.getContext(conf.getPath_key(),conf.getPath_crt(),conf.getPath_ca_bundle(),conf.get_save_combine_path());
+//            if(context!=null){
+//                ws.setWebSocketFactory(new DefaultSSLWebSocketServerFactory(context));
+//            }
         }
         ws.start();
 
@@ -139,5 +155,22 @@ public class MessageServer {
 
         Log.d("ClientListen Initial OK!");
 
+        if(conf.getStun_port()>0){
+            try {
+                //https://github.com/tking/JSTUN
+                new StunServer(conf.getStun_port()).start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private void setSSL(wsServer ws){
+        SSLContext context = WsSSL.getContext(conf.getPath_key(),conf.getPath_crt(),conf.getPath_ca_bundle(),conf.get_save_combine_path());
+        if(context!=null){
+            ws.setWebSocketFactory(new DefaultSSLWebSocketServerFactory(context));
+        }
     }
 }
+

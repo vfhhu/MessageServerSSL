@@ -25,6 +25,7 @@ public class MyConf {
 	private List<String>	sys_no=null;
 	private List<String>	sys_group=null;
 	private int	limit=0;
+	private int	stun_port=0;
 
 
 //	private int		wss_port= 0;
@@ -159,6 +160,14 @@ public class MyConf {
 			limit=0;
 		}
 
+		try {
+			stun_port = toml.getLong("StunPort").intValue();
+		}catch (Exception e) {
+			Log.d("StunPort 錯誤");
+			stun_port=0;
+			//System.exit(1);
+		}
+
 
 
 //		try {
@@ -234,6 +243,9 @@ public class MyConf {
 		return limit;
 	}
 
+	public int getStun_port() {
+		return stun_port;
+	}
 	//	public int getWss_port() {
 //		return wss_port;
 //	}
