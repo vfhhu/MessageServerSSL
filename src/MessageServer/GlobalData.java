@@ -176,7 +176,7 @@ public class GlobalData {
 				json_ret.put("data", gps);
 //				custData.send(json_ret.toString());
 				send(custData,json_ret);
-			}else if(cmd.equals("sendGroup")){
+			}else if(cmd.equals("sendGroup") || cmd.equals("sendGroupFromServer")){
 				JSONObject json_ret = new JSONObject();
 				json_ret.put("cmd", cmd);
 				json_ret.put("value", value);
@@ -550,6 +550,17 @@ public class GlobalData {
 	}
 	public static void exitGroup(CustData custData ,String group){
 		if(group.length()==0)return;
+
+		JSONObject jobj=new JSONObject();
+		try {
+			jobj.put("cmd","sendGroupFromServer");
+			jobj.put("group",group);
+			jobj.put("value",custData.getNo());
+			GlobalData.onData(custData ,jobj);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
 		if(GroupDataMap.containsKey(group)){
 			List<CustData> ll=GroupDataMap.get(group);
 			if(ll.contains(custData)){
@@ -565,7 +576,8 @@ public class GlobalData {
 	public static CustData CustExit(String key){
 		CustData custData=null;
 		try{
-			if(CustDataMap.containsKey(key))custData=CustDataMap.remove(key);
+			if(CustDataMap.containsKey(key))custData=CustDataMap.get(key);
+			//if(CustDataMap.containsKey(key))custData=CustDataMap.remove(key);
 			if(custData!=null){
 //				for(int i=0;i< custData.getGroupA().size();i++){
 //					String group=custData.getGroupA().get(i);
@@ -573,6 +585,7 @@ public class GlobalData {
 //				}
 				exitGroup(custData ,custData.getGroup());
 			}
+			if(CustDataMap.containsKey(key))CustDataMap.remove(key);
 		}catch(Exception e){e.printStackTrace();}
 
 		return custData;
