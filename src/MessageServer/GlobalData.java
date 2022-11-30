@@ -3,6 +3,7 @@ package MessageServer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import com.threex.lib.Log;
 import com.threex.lib.hash.Hmac;
@@ -148,8 +149,10 @@ public class GlobalData {
 						exitGroup(custData ,old_gp);
 					}
 					custData.setGroup(group);
-					if(!GroupDataMap.containsKey(group))GroupDataMap.put(group, new ArrayList<>());
-					if(!GroupDataMap.get(group).contains(custData))GroupDataMap.get(group).add(custData);
+					if(!GroupDataMap.containsKey(group))GroupDataMap.put(group, Collections.synchronizedList(new ArrayList()));
+					if(!GroupDataMap.get(group).contains(custData)){
+						GroupDataMap.get(group).add(custData);
+					}
 				}
 				JSONObject json_ret = new JSONObject();
 				json_ret.put("cmd", cmd);
@@ -171,10 +174,18 @@ public class GlobalData {
 				String group=custData.getGroup();
 				if(group.trim().length()==0)return;
 				int gps=0;
-				if(GroupDataMap.containsKey(group))gps=GroupDataMap.get(group).size();
+				JSONArray ja=new JSONArray();
+				if(GroupDataMap.containsKey(group)){
+					//List<CustData> list=new ArrayList<>(GroupDataMap.get(group));
+					List<CustData> list=CloneListSafe(GroupDataMap.get(group));
+					gps=list.size();
+					for (CustData i : list){
+						ja.put(i.getInfo());
+					}
+				}
 				JSONObject json_ret = new JSONObject();
 				json_ret.put("cmd", cmd);
-				json_ret.put("value", "ok");
+				json_ret.put("value",ja.toString());
 				json_ret.put("data", gps);
 //				custData.send(json_ret.toString());
 				send(custData,json_ret);
@@ -191,12 +202,13 @@ public class GlobalData {
 				if(group.trim().length()==0)return;
 				if(GroupDataMap.containsKey(group) && !isBlack(group,custData.getNo())) {
 					json_ret.put("size", GroupDataMap.get(group).size());
-					List<CustData> lll=GroupDataMap.get(group);
+//					List<CustData> lll=new ArrayList<>(GroupDataMap.get(group));
+					List<CustData> lll=CloneListSafe(GroupDataMap.get(group));
 					for(int i=0;i<lll.size();i++){
 						send(lll.get(i),json_ret);
 					}
 					if(!GroupMsgMap.containsKey(group)){
-						GroupMsgMap.put(group,new ArrayList<>());
+						GroupMsgMap.put(group,Collections.synchronizedList(new ArrayList()));
 					}
 					GroupMsgMap.get(group).add(json_ret);
 					if(GroupMsgMap.get(group).size()>10)GroupMsgMap.get(group).remove(0);
@@ -222,7 +234,8 @@ public class GlobalData {
 				boolean retV=false;
 				if(GroupDataMap.containsKey(group) && no.length()>0  && !isBlack(group,custData.getNo())) {
 					json_ret.put("size", GroupDataMap.get(group).size());
-					List<CustData> lll=GroupDataMap.get(group);
+//					List<CustData> lll=new ArrayList<>(GroupDataMap.get(group));
+					List<CustData> lll=CloneListSafe(GroupDataMap.get(group));
 					for(int i=0;i<lll.size();i++){
 						if(lll.get(i).getNo().equals(no)){
 							send(lll.get(i),json_ret);
@@ -240,7 +253,8 @@ public class GlobalData {
 				if(group.trim().length()==0)return;
 				JSONArray ja=new JSONArray();
 				if(GroupMsgMap.containsKey(group) && GroupMsgMap.get(group).size()>0){
-					ja=new JSONArray(GroupMsgMap.get(group));
+					ja=new JSONArray(CloneListSafe(GroupMsgMap.get(group)));
+//					ja=new JSONArray(GroupMsgMap.get(group));
 				}
 				JSONObject json_ret = new JSONObject();
 				json_ret.put("cmd", cmd);
@@ -368,13 +382,14 @@ public class GlobalData {
 				if(GroupDataMap.containsKey(group)) {
 
 					json_ret.put("size", GroupDataMap.get(group).size());
-					List<CustData> lll=GroupDataMap.get(group);
+//					List<CustData> lll=new ArrayList<>(GroupDataMap.get(group));
+					List<CustData> lll=CloneListSafe(GroupDataMap.get(group));
 					for(int i=0;i<lll.size();i++){
 						send(lll.get(i),json_ret);
 //						lll.get(i).send(json_ret.toString());
 					}
 					if(!GroupMsgMap.containsKey(group)){
-						GroupMsgMap.put(group,new ArrayList<>());
+						GroupMsgMap.put(group,Collections.synchronizedList(new ArrayList()));
 					}
 					GroupMsgMap.get(group).add(json_ret);
 					if(GroupMsgMap.get(group).size()>10)GroupMsgMap.get(group).remove(0);
@@ -434,7 +449,8 @@ public class GlobalData {
 				String group=custData.getGroup();;
 				String no=json.optString("no").trim();
 				if(no.length()>0 && group.length()>0 && GroupMsgMap.containsKey(group) && GroupMsgMap.get(group).size()>0){
-					JSONArray ja=new JSONArray(GroupMsgMap.get(group));
+//					JSONArray ja=new JSONArray(GroupMsgMap.get(group));
+					JSONArray ja=new JSONArray(CloneListSafe(GroupMsgMap.get(group)));
 					ArrayList<JSONObject> arr=new ArrayList<>();
 					boolean isClear=false;
 					for(int i=0;i<ja.length();i++){
@@ -445,7 +461,7 @@ public class GlobalData {
 						}
 						arr.add(jo);
 					}
-					GroupMsgMap.put(group,arr);
+					GroupMsgMap.put(group,Collections.synchronizedList(new ArrayList(arr)));
 
 
 
@@ -457,7 +473,8 @@ public class GlobalData {
 					json_ret.put("time", System.currentTimeMillis()+"");
 					if(GroupDataMap.containsKey(group)) {
 						json_ret.put("size", GroupDataMap.get(group).size());
-						List<CustData> lll=GroupDataMap.get(group);
+//						List<CustData> lll=new ArrayList<>(GroupDataMap.get(group));
+						List<CustData> lll=CloneListSafe(GroupDataMap.get(group));
 						for(int i=0;i<lll.size();i++){
 							send(lll.get(i),json_ret);
 						}
@@ -469,7 +486,8 @@ public class GlobalData {
 				String no=json.optString("no").trim();
 				String mTime=json.optString("mTime").trim();
 				if(no.length()>0 && group.length()>0 && GroupMsgMap.containsKey(group) && GroupMsgMap.get(group).size()>0){
-					JSONArray ja=new JSONArray(GroupMsgMap.get(group));
+//					JSONArray ja=new JSONArray(GroupMsgMap.get(group));
+					JSONArray ja=new JSONArray(CloneListSafe(GroupMsgMap.get(group)));
 					ArrayList<JSONObject> arr=new ArrayList<>();
 					boolean isClear=false;
 					for(int i=0;i<ja.length();i++){
@@ -480,7 +498,7 @@ public class GlobalData {
 						}
 						arr.add(jo);
 					}
-					GroupMsgMap.put(group,arr);
+					GroupMsgMap.put(group,Collections.synchronizedList(new ArrayList(arr)));
 
 
 
@@ -493,7 +511,8 @@ public class GlobalData {
 					json_ret.put("time", System.currentTimeMillis()+"");
 					if(GroupDataMap.containsKey(group)) {
 						json_ret.put("size", GroupDataMap.get(group).size());
-						List<CustData> lll=GroupDataMap.get(group);
+//						List<CustData> lll=new ArrayList<>(GroupDataMap.get(group));
+						List<CustData> lll=CloneListSafe(GroupDataMap.get(group));
 						for(int i=0;i<lll.size();i++){
 							send(lll.get(i),json_ret);
 						}
@@ -614,6 +633,14 @@ public class GlobalData {
 		if(group.trim().length()==0 )return new ArrayList<>();
 		if(!blackList.containsKey(group))return new ArrayList<>();
 		return blackList.get(group);
+	}
+
+	public static List CloneListSafe(List l){
+		List list;
+		synchronized(l){
+			list=new ArrayList<>(l);
+		}
+		return list;
 	}
 
 
