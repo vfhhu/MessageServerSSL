@@ -99,7 +99,7 @@ public class MessageServer {
         }
     }
     private void init() {
-        Log.d("Initial Server....");
+        Log.d("Initial Server....2");
 
 
 
